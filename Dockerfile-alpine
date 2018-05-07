@@ -1,0 +1,74 @@
+
+# Do not use if you care about security (read comments)!
+
+FROM alpine:latest
+LABEL maintainer "publicarray"
+LABEL description "chrony is a versatile implementation of the Network Time Protocol (NTP)"
+ENV REVISION 0
+
+ENV CHRONY_BUILD_DEPS make tar gcc musl-dev libcap-dev libseccomp-dev libedit-dev tzdata
+# test with glibc ?
+# ENV CHRONY_BUILD_DEPS make tar gcc libc-dev libcap-dev libseccomp-dev libedit-dev tzdata
+RUN apk add --no-cache $CHRONY_BUILD_DEPS
+
+# https://chrony.tuxfamily.org/news.html
+ENV CHRONY_VERSION 3.3
+ENV CHRONY_DOWNLOAD_URL "https://download.tuxfamily.org/chrony/chrony-${CHRONY_VERSION}.tar.gz"
+ENV CHRONY_SHA256 0d1fb2d5875032f2d5a86f3770374c87ee4c941916f64171e81f7684f2a73128
+ENV TZDATA_VERSION 2018e
+
+RUN set -x && \
+    mkdir -p /tmp && \
+    cd /tmp && \
+    wget -O chrony.tar.gz $CHRONY_DOWNLOAD_URL && \
+    echo "${CHRONY_SHA256} *chrony.tar.gz" | sha256sum -c - && \
+    tar xzf chrony.tar.gz && \
+    rm -f chrony.tar.gz && \
+    cd chrony-${CHRONY_VERSION} && \
+    ./configure --enable-scfilter --with-user _chrony \
+    setenv CFLAGS "-O2 -flto -fPIE -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=2 -fstack-protector-strong -Wformat -Werror=format-security" \
+    setenv LDFLAGS "-Wl,-z,now -Wl,-z,relro" && \
+    make && \
+    make quickcheck && \
+    make install
+
+# update tzdata (doesn't work yet)
+# RUN set -x && \
+#     wget -O tzdata.tar.gz "http://www.iana.org/time-zones/repository/releases/tzdata${TZDATA_VERSION}.tar.gz" && \
+#     tar xvf tzdata.tar.gz && \
+#     ls -l && \
+#     zic -y ./yearistype -d /usr/share/zoneinfo/right -L leapseconds etcetera systemv factory
+
+#------------------------------------------------------------------------------#
+FROM alpine:latest
+
+ENV CHRONY_RUN_DEPS libcap libseccomp libedit tzdata
+
+RUN apk add --no-cache $CHRONY_RUN_DEPS && mkdir -p /usr/share/zoneinfo/right
+
+COPY --from=0 /usr/local/sbin/chronyd /usr/local/sbin/chronyd
+COPY --from=0 /usr/local/bin/chronyc /usr/local/bin/chronyc
+# COPY --from=0 /usr/share/zoneinfo/right/UTC /usr/share/zoneinfo/right/UTC
+
+RUN set -x && \
+    addgroup -S _chrony && \
+    adduser -S -D -H -s /sbin/nologin -G _chrony -g _chrony _chrony && \
+    mkdir -p /var/lib/chrony && \
+    chown -R _chrony:_chrony /var/lib/chrony
+    # wget ftp://ftp.nist.gov/pub/time/leap-seconds.list -O /usr/share/zoneinfo/leap-seconds.list && \
+    # zic -L /usr/share/zoneinfo/leap-seconds.list
+
+COPY chrony.conf /etc/chrony.conf
+
+EXPOSE 123/udp
+
+RUN chronyd --version
+
+HEALTHCHECK --interval=60s --timeout=5s CMD chronyc tracking > /dev/null
+
+ENTRYPOINT ["/usr/local/sbin/chronyd"]
+CMD ["-d", "-F", "0"]
+## libseccomp restrictions don't work, also no leap-seconds
+# CMD ["-d", "-F", "1", "-s"]
+## changing nice (process priority) is not permitted even with --cap-add SYS_NICE, same with locking process into RAM
+# CMD ["-d", "-F", "1", "-s", "-m", "-P" "1"]
