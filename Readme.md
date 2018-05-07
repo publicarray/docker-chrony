@@ -1,4 +1,5 @@
-This image is designed to be used as servers as part of the [www.pool.ntp.org](https://ntppool.org) project.
+This image is designed to be used as part of the [www.pool.ntp.org](https://ntppool.org) project.
+Default is for the Australian zone
 
 ```sh
 # Build
