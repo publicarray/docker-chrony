@@ -45,11 +45,13 @@ COPY chrony.conf /etc/chrony.conf
 
 EXPOSE 123/udp
 
+COPY entrypoint.sh /
+
 RUN chronyd --version
 
 HEALTHCHECK --interval=60s --timeout=5s CMD chronyc tracking > /dev/null
 
-ENTRYPOINT ["/usr/local/sbin/chronyd"]
+ENTRYPOINT ["/entrypoint.sh"]
 
-CMD ["-d", "-F", "1", "-s"]
-# CMD ["-d", "-F", "1", "-s", "-m", "-P" "1"]
+# CMD ["--", "-d", "-F", "1", "-s"]
+# CMD ["--", "-d", "-F", "1", "-s", "-m", "-P" "1"]
