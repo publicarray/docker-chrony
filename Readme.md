@@ -16,6 +16,10 @@ docker run -it --rm --name chrony -p123:123/udp publicarray/chrony -- --help
 docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony -s time.apple.com
 # Always restart / always online service
 docker run -d --restart always --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony
+
+# Save state and use host network
+docker volume create chrony
+docker run -d --restart always --name chrony --network host -v chrony:/var/lib/chrony --cap-add SYS_TIME publicarray/chrony
 ```
 
 ```sh
