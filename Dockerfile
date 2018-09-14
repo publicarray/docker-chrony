@@ -1,7 +1,7 @@
 FROM debian:latest
 LABEL maintainer "publicarray"
 LABEL description "chrony is a versatile implementation of the Network Time Protocol (NTP)"
-ENV REVISION 0
+ENV REVISION 1
 
 ENV CHRONY_BUILD_DEPS make tar wget gcc libcap-dev libseccomp-dev libedit-dev
 RUN apt-get update \
