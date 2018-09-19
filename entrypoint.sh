@@ -37,6 +37,11 @@ done
 
 shift "$numServers"
 
+# Remove leftover pid file from previous runs
+if [ -f /var/run/chronyd.pid ]; then
+    rm -f /var/run/chronyd.pid
+fi
+
 if [ $# -eq 0 ]; then
 # https://chrony.tuxfamily.org/doc/3.3/chronyd.html
 # -d = Don't detach from terminal and log to stdout/stderr
