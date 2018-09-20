@@ -38,8 +38,8 @@ done
 shift "$numServers"
 
 # Remove leftover pid file from previous runs
-if [ -f /var/run/chronyd.pid ]; then
-    rm -f /var/run/chronyd.pid
+if [ -f /var/run/chrony/chronyd.pid ]; then
+    rm -f /var/run/chrony/chronyd.pid
 fi
 
 if [ $# -eq 0 ]; then
