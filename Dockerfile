@@ -9,9 +9,9 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 # https://chrony.tuxfamily.org/news.html
-ENV CHRONY_VERSION 3.3
+ENV CHRONY_VERSION 3.4
 ENV CHRONY_DOWNLOAD_URL "https://download.tuxfamily.org/chrony/chrony-${CHRONY_VERSION}.tar.gz"
-ENV CHRONY_SHA256 0d1fb2d5875032f2d5a86f3770374c87ee4c941916f64171e81f7684f2a73128
+ENV CHRONY_SHA256 af77e47c2610a7e55c8af5b89a8aeff52d9a867dd5983d848b52d374bc0e6b9f
 ENV TZDATA_VERSION 2018e
 
 RUN set -x && \
