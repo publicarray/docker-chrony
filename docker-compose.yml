@@ -12,7 +12,9 @@ services:
       restart_policy:
         condition: on-failure
     ports:
-      - "123:123"
+      - target: 123
+        published: 123
+        mode: host
     cap_add:
       - SYS_NICE
       - SYS_RESOURCE
