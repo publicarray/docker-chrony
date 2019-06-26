@@ -13,7 +13,7 @@ docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME -v "$(pwd)"/c
 # Run with arguments
 docker run -it --rm --name chrony -p123:123/udp publicarray/chrony -- --help
 # Specify NTP servers to use as a time source
-docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony -s time.apple.com
+docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony -s time.apple.com -s time.windows.com -s time.cloudflare.com
 # Always restart / always online service
 docker run -d --restart always --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony
 
