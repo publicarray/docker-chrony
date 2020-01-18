@@ -14,8 +14,8 @@ docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME -v "$(pwd)"/c
 docker run -it --rm --name chrony -p123:123/udp publicarray/chrony -- --help
 # Specify NTP servers to use as a time source
 docker run -it --rm --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony -s time.apple.com -s time.windows.com -s time.cloudflare.com
-# Always restart / always online service
-docker run -d --restart always --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony
+# Always restart / always online service and limit logfile size
+docker run -d --restart always --name chrony -p123:123/udp --cap-add SYS_TIME publicarray/chrony --log-opt max-size=1m --log-opt max-file=3
 
 # Save state and use host network
 docker volume create chrony
@@ -33,7 +33,7 @@ docker run -d --restart always --name chrony --network host -v chrony:/var/lib/c
 
 ```sh
 # get current status:
-$ conntrack -C
+$ sysctl net.netfilter.nf_conntrack_count
 $ sysctl net.netfilter.nf_conntrack_max
 
 # disable conntrack on NTP port 123
