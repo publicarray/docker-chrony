@@ -3,16 +3,16 @@ LABEL maintainer "publicarray"
 LABEL description "chrony is a versatile implementation of the Network Time Protocol (NTP)"
 ENV REVISION 1
 
-ENV CHRONY_BUILD_DEPS make tar wget gcc libcap-dev libseccomp-dev libedit-dev
+ENV CHRONY_BUILD_DEPS make pkg-config tar wget gcc libcap-dev libseccomp-dev libedit-dev nettle-dev libgnutls28-dev libtomcrypt-dev
 RUN apt-get update \
     && apt-get install -y $CHRONY_BUILD_DEPS \
     && rm -rf /var/lib/apt/lists/*
 
 # https://chrony.tuxfamily.org/news.html
-ENV CHRONY_VERSION 3.5.1
+ENV CHRONY_VERSION 4.0
 ENV CHRONY_DOWNLOAD_URL "https://download.tuxfamily.org/chrony/chrony-${CHRONY_VERSION}.tar.gz"
-ENV CHRONY_SHA256 1ba82f70db85d414cd7420c39858e3ceca4b9eb8b028cbe869512c3a14a2dca7
-ENV TZDATA_VERSION 2018e
+ENV CHRONY_SHA256 be27ea14c55e7a4434b2fa51d53018c7051c42fa6a3198c9aa6a1658bae0c625
+ENV TZDATA_VERSION 2020b
 
 RUN set -x && \
     mkdir -p /tmp && \
@@ -32,7 +32,7 @@ RUN set -x && \
 #------------------------------------------------------------------------------#
 FROM debian:latest
 
-ENV CHRONY_RUN_DEPS libcap2 libseccomp2 libedit2 tzdata
+ENV CHRONY_RUN_DEPS libcap2 libseccomp2 libedit2 tzdata libnettle6 libgnutls30 libtomcrypt1
 
 RUN apt-get update \
     && apt-get install -y $CHRONY_RUN_DEPS \
@@ -43,7 +43,7 @@ COPY --from=0 /usr/local/bin/chronyc /usr/local/bin/chronyc
 
 COPY chrony.conf /etc/chrony.conf
 
-EXPOSE 123/udp
+EXPOSE 123/udp 4460/tcp
 
 COPY entrypoint.sh /
 
