@@ -1,6 +1,7 @@
 FROM debian:latest
 LABEL maintainer "publicarray"
 LABEL description "chrony is a versatile implementation of the Network Time Protocol (NTP)"
+LABEL org.opencontainers.image.source https://github.com/publicarray/docker-chrony
 ENV REVISION 2
 
 ENV CHRONY_BUILD_DEPS make pkg-config tar wget gcc libcap-dev libseccomp-dev libedit-dev nettle-dev libgnutls28-dev libtomcrypt-dev
