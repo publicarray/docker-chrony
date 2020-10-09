@@ -32,6 +32,7 @@ RUN set -x && \
 
 #------------------------------------------------------------------------------#
 FROM debian:latest
+LABEL org.opencontainers.image.source https://github.com/publicarray/docker-chrony
 
 ENV CHRONY_RUN_DEPS libcap2 libseccomp2 libedit2 tzdata libnettle6 libgnutls30 libtomcrypt1
 
